@@ -88,6 +88,7 @@ jobs:
       - name: 添加制作名称
         run: |
           cd kernel_workspace
+          cd common
           echo "替换内核版本后缀..."
           if [[ -n "${{ github.event.inputs.kernel_suffix }}" ]]; then
             echo "当前内核版本后缀：${{ github.event.inputs.kernel_suffix }}"
