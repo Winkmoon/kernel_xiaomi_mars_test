@@ -1,4 +1,4 @@
-name: 欧加真 6.1.118 CCTV18 & ShirokoNeko Kernel Building
+name: XiaoMi11Pro ShirokoNeko Kernel Building
 
 env:
   TZ: Asia/Shanghai
