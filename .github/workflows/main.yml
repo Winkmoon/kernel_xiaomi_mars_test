@@ -1,5 +1,4 @@
 name: XiaoMi11Pro ShirokoNeko Kernel Building
-
 env:
   TZ: Asia/Shanghai
   CPU: 'sm8350'
@@ -9,7 +8,6 @@ env:
   KERNEL_NAME: 'ShirokoNeko-0d000721'
   KERNELSU_VARIANT: 'SukiSU-Ultra'
   KERNELSU_BRANCH: 'susfs-main'
-
 on:
   workflow_dispatch:
     inputs:
@@ -18,7 +16,6 @@ on:
         required: false
         type: string
         default: ''
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,7 +32,6 @@ jobs:
           remove-android: 'true'
           remove-haskell: 'true'
           remove-codeql: 'true'
-
       - name: 安装配置环境依赖
         run: |
           sudo apt update
@@ -43,8 +39,9 @@ jobs:
           sudo rm -rf ./llvm.sh
           sudo wget https://apt.llvm.org/llvm.sh
           sudo chmod +x llvm.sh
-          sudo sudo ./llvm.sh 18 all
-
+          sudo ./llvm.sh 20 all  # 将llvm版本改为20
+          # 安装gcc交叉编译工具链
+          sudo apt-get install gcc-aarch64-linux-gnu gcc-arm-linux-gnueabihf -y
       - name: 初始化源码仓库
         run: |
           rm -rf kernel_workspace && mkdir kernel_workspace && cd kernel_workspace
@@ -56,14 +53,10 @@ jobs:
             sed -i 's/ -dirty//g' "$f"
             sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' "$f"
           done
-
       - name: 添加 SukiSU-Ultra
         id: ksu_version
         run: |
           cd kernel_workspace
-          #if [[ "${{ env.KERNELSU_VARIANT }}" == "SukiSU-Ultra" ]]; then
-          #  echo "BRANCH='-s susfs-main'" >> $GITHUB_ENV
-          #fi
           curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/refs/heads/main/kernel/setup.sh" | bash -s susfs-main
           cd ./KernelSU
           KSU_VERSION=$(expr $(/usr/bin/git rev-list --count main) "+" 10700)
@@ -82,7 +75,6 @@ jobs:
           #禁用 defconfig 检查
           sed -i 's/check_defconfig//' ./build.config.gki
           
-
       - name: 添加制作名称
         run: |
           cd kernel_workspace
@@ -104,7 +96,8 @@ jobs:
         run: |
           cd kernel_workspace
           cd common
-          sudo make -j$(nproc --all) LLVM=-18 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnuabeihf- CC=clang LD=ld.lld HOSTCC=clang HOSTLD=ld.lld O=out KCFLAGS+=-Wno-error vendor/mars_defconfig all
+          # 使用gcc交叉编译（移除LLVM相关参数）
+          sudo make -j$(nproc --all) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabihf- O=out KCFLAGS+=-Wno-error vendor/mars_defconfig all
           
       - name: 克隆 AnyKernel3 并打包
         run: |
@@ -126,13 +119,11 @@ jobs:
           else
             zip -r ../AnyKernel3_SukiSU_${{ env.KSUVER }}_${{ env.KERNEL_VERSION }}_A15_${{ env.KERNEL_NAME }}.zip ./*
           fi
-
       - name: 上传 ZIP 工件
         uses: actions/upload-artifact@v4
         with:
           name: Kernel_ZIP_Artifacts
           path: ${{ github.workspace }}/kernel_workspace/*.zip
-
   release:
     needs: build
     runs-on: ubuntu-latest
@@ -147,7 +138,6 @@ jobs:
         with:
           name: Kernel_ZIP_Artifacts
           path: ./release_zips
-
       - name: 设置环境变量
         run: |
           if [[ -n "${{ github.event.inputs.kernel_suffix }}" ]]; then
