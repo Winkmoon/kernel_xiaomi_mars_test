@@ -39,7 +39,8 @@ jobs:
           sudo rm -rf ./llvm.sh
           sudo wget https://apt.llvm.org/llvm.sh
           sudo chmod +x llvm.sh
-          sudo ./llvm.sh 15 all  # 改为安装LLVM 15版本
+          sudo ./llvm.sh 18 all
+          
       - name: 初始化源码仓库
         run: |
           rm -rf kernel_workspace && mkdir kernel_workspace && cd kernel_workspace
