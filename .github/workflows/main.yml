@@ -39,7 +39,7 @@ jobs:
           sudo rm -rf ./llvm.sh
           sudo wget https://apt.llvm.org/llvm.sh
           sudo chmod +x llvm.sh
-          sudo ./llvm.sh 20 all  # 将llvm版本改为20
+          sudo ./llvm.sh 15 all  # 将llvm版本改为20
           # 安装gcc交叉编译工具链
           sudo apt-get install gcc-aarch64-linux-gnu gcc-arm-linux-gnueabihf -y
       - name: 初始化源码仓库
@@ -96,7 +96,6 @@ jobs:
         run: |
           cd kernel_workspace
           cd common
-          # 使用gcc交叉编译（移除LLVM相关参数）
           sudo make -j$(nproc --all) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabihf- O=out KCFLAGS+=-Wno-error vendor/mars_defconfig all
           
       - name: 克隆 AnyKernel3 并打包
