@@ -68,9 +68,9 @@ jobs:
         run: |
           cd kernel_workspace
           cd common
-          echo "CONFIG_KSU=y" >> ./arch/arm64/configs/vendor/star-qgki_defconfig
+          echo "CONFIG_KSU=y" >> ./arch/arm64/configs/gki_defconfig
           echo "正在开启manual钩子..."
-          echo "CONFIG_KSU_MANUAL_HOOK=y" >> ./arch/arm64/configs/vendor/star-qgki_defconfig
+          echo "CONFIG_KSU_MANUAL_HOOK=y" >> ./arch/arm64/configs/gki_defconfig
           #禁用 defconfig 检查
           sed -i 's/check_defconfig//' ./build.config.gki
           
@@ -96,7 +96,7 @@ jobs:
           cd kernel_workspace
           cd common
           # 使用LLVM 18相关参数编译
-          sudo make -j$(nproc --all) LLVM=-18 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabihf- CC=clang LD=ld.lld HOSTCC=clang HOSTLD=ld.lld O=out KCFLAGS+=-Wno-error vendor/star-qgki_defconfig all
+          sudo make -j$(nproc --all) LLVM=-18 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabihf- CC=clang LD=ld.lld HOSTCC=clang HOSTLD=ld.lld O=out KCFLAGS+=-Wno-error gki_defconfig all
           
       - name: 克隆 AnyKernel3 并打包
         run: |
