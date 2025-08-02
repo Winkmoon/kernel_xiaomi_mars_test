@@ -26,3 +26,7 @@ $(obj)/elfconfig.h: $(obj)/empty.o $(obj)/mk_elfconfig FORCE
 	$(call if_changed,elfconfig)
 
 targets += elfconfig.h
+
+# 不知道有什么用
+$(obj)/empty.o: $(src)/empty.c
+	$(CC) $(filter-out -EL,$(CFLAGS)) -c -o $@ $<
