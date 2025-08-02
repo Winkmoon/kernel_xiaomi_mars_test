@@ -95,8 +95,8 @@ jobs:
         run: |
           cd kernel_workspace
           cd common
-          # 使用LLVM 15相关参数编译
-          sudo make -j$(nproc --all) LLVM=-15 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabihf- CC=clang LD=ld.lld HOSTCC=clang HOSTLD=ld.lld O=out KCFLAGS+=-Wno-error vendor/mars_defconfig all
+          # 使用LLVM 18相关参数编译
+          sudo make -j$(nproc --all) LLVM=-18 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabihf- CC=clang LD=ld.lld HOSTCC=clang HOSTLD=ld.lld O=out KCFLAGS+=-Wno-error vendor/mars_defconfig all
           
       - name: 克隆 AnyKernel3 并打包
         run: |
